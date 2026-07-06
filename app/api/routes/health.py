@@ -1,0 +1,33 @@
+"""
+서버 상태 확인 엔드포인트
+
+Production 환경에서 필수적인 헬스체크 API입니다.
+로드밸런서, 쿠버네티스 등에서 서버 상태를 확인할 때 사용합니다.
+
+엔드포인트:
+    GET /health/         - 기본 헬스체크
+    GET /health/ready    - 준비 상태 확인 (DB 연결 등)
+"""
+
+from datetime import datetime, timezone
+
+from fastapi import APIRouter
+
+from app.core.config import settings
+
+router = APIRouter()
+
+
+@router.get("/")
+async def health_check() -> dict:
+    """
+    기본 헬스체크
+
+    로드밸런서, Docker HEALTHCHECK 등에서 서버 생존 여부를 확인할 때 사용합니다.
+    """
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "version": "0.5.0",
+        "environment": settings.environment,
+    }
