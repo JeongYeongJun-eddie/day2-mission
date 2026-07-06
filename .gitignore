@@ -64,6 +64,7 @@ Thumbs.db
 
 # ===== Claude Code (local/personal settings) =====
 .claude/settings.local.json
+.claude/scheduled_tasks.lock
 
 # ===== Project Specific =====
 # 데이터 파일 (민감 정보 포함 가능)

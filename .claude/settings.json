@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(docker compose *)"
+      "Bash(docker compose *)",
+      "Bash(export GH_CONFIG_DIR=\"$HOME/.gh-config\")",
+      "Bash(gh run *)"
     ]
   }
 }

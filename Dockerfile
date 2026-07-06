@@ -55,7 +55,8 @@ COPY data/ ./data/
 COPY pyproject.toml README.md ./
 
 # TODO 2: 보안 설정 - non-root 유저 생성 및 권한 설정
-RUN groupadd -r appuser && useradd -r -g appuser appuser \
+# -d /app: appuser의 홈을 /app으로 지정 (uv 캐시 등 쓰기 권한 필요한 경로가 /app 하위이므로)
+RUN groupadd -r appuser && useradd -r -g appuser -d /app appuser \
     && chown -R appuser:appuser /app
 
 # non-root 유저로 전환
@@ -64,7 +65,8 @@ USER appuser
 # 환경변수 설정
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PATH="/app/.venv/bin:$PATH"
+    PATH="/app/.venv/bin:$PATH" \
+    HOME=/app
 
 # TODO 3: 헬스체크 설정
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
@@ -74,4 +76,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
 EXPOSE 8000
 
 # TODO 4: 서버 실행 명령어 작성(uv run)
-CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# --no-sync: builder 단계에서 이미 준비된 .venv를 그대로 사용 (매 컨테이너 시작마다 재설치 방지)
+CMD ["uv", "run", "--no-sync", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
